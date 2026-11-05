@@ -61,12 +61,12 @@
 
 8) SecCookieCheck
 Стандартная проверка __security_cookie , внутри SafeGetDeviceStackEntry был вызов это функции инструкциям rol|ror прямо над злачением, сверяемым с куками из .data/ Это классическая компиляторная защита от переполнения стека.
-![SecCoockeCheck](photos/SecCoockeCheck.png)
+
 
 9) SystemCrash
 int 0x29 (Fast Fail).
 Ветка отказа из SecCookieCheck приводит нас прямо сюда, в ecx записывается стандартный код ошибки , а затем int 0x29, которое является программным пребыванием , вызывающее аварийное завершение .
-![SystemCrash](photos/SystemCrash.png)
+
 
 10) SizeChecker + UserBufferSafetyChecker
 Проверка входного буфера.
