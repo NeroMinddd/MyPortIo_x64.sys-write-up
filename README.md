@@ -91,17 +91,21 @@ int 0x29 (Fast Fail).
 
 Итоговая архитектура драйвера:
 
-DriverEntry → ProccessDriver (MajorFunction table)
-         → majorFunc (IOCTL dispatch tree)
-             ├─ SizeChecker / UserBufferSafetyChecker (валидация буфера)
-             │    └─ SafeMemoryBoundaryGuard / NegativeSizeCheck (границы/знак)
-             │         └─ DataFromUserCopy → MemCpy
-             ├─ PortsProcess ──┐
-             ├─ ThreadSafetyForDataProccess ──┤
-             ├─ DataInputInDriver ──┤→ IOPortDispatcher (in/out, lock cmpxchg)
-             ├─ AnotherPorts/DataInProccess ──┘
-             └─ (SafeGetDeviceStackEntry → SecCookieCheck → SystemCrash)
-error_driverExit 
+DriverEntry
+ └── ProccessDriver (MajorFunction table)
+      └── majorFunc (IOCTL dispatch tree)
+           ├── SizeChecker / UserBufferSafetyChecker (валидация буфера)
+           │    └── SafeMemoryBoundaryGuard / NegativeSizeCheck (границы / знак)
+           │         └── DataFromUserCopy → MemCpy
+           ├── PortsProcess
+           ├── ThreadSafetyForDataProccess
+           ├── DataInputInDriver ──┐
+           ├── AnotherPorts/DataInProccess ──┘
+           │    └── IOPortDispatcher (in/out, lock cmpxchg)
+           └── SafeGetDeviceStackEntry → SecCookieCheck → SystemCrash
+
+error_driverExit
+
 
 
 [EN] Write-up: Static Semantic Reverse Engineering of MyPortIO_x64.sys (Gigabyte Control Center)
