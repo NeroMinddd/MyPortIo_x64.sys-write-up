@@ -89,24 +89,18 @@ int 0x29 (Fast Fail).
 Финальная цель маршрута: читает размер и указатель из IRP,а если точнее пользовательского буфера и вызывает кастомный MemCpy (SSE - оптимизированная рутина компилятора , movaps, выравнивание по 0x7, восстановление по стандартному шаблону генерированного компилятором MemCpy).
 ![DataFromUserCopy](photos/DataFromUserCopy.png)
 
-Итоговая архитектура драйвера:
-
-DriverEntry
- └── ProccessDriver (MajorFunction table)
-      └── majorFunc (IOCTL dispatch tree)
-           ├── SizeChecker / UserBufferSafetyChecker (валидация буфера)
-           │    └── SafeMemoryBoundaryGuard / NegativeSizeCheck (границы / знак)
-           │         └── DataFromUserCopy → MemCpy
-           ├── PortsProcess
-           ├── ThreadSafetyForDataProccess
-           ├── DataInputInDriver ──┐
-           ├── AnotherPorts/DataInProccess ──┘
-           │    └── IOPortDispatcher (in/out, lock cmpxchg)
-           └── SafeGetDeviceStackEntry → SecCookieCheck → SystemCrash
-
+DriverEntry → ProccessDriver (MajorFunction table)
+         → majorFunc (IOCTL dispatch tree)
+             ├─ SizeChecker / UserBufferSafetyChecker (Buffer validation)
+             │    └─ SafeMemoryBoundaryGuard / NegativeSizeCheck (Bounds/Sign check)
+             │         └─ DataFromUserCopy → MemCpy
+             ├─ PortsProcess ──┐
+             ├─ ThreadSafetyForDataProccess ──┤
+             ├─ DataInputInDriver ──┤→ IOPortDispatcher (in/out, lock cmpxchg)
+             ├─ AnotherPorts/DataInProccess ──┘
+             └─ (SafeGetDeviceStackEntry → SecCookieCheck → SystemCrash)
 error_driverExit
-
-
+(видно к сожалению только в режиме Code этого readme)
 
 [EN] Write-up: Static Semantic Reverse Engineering of MyPortIO_x64.sys (Gigabyte Control Center)
 This write-up provides a detailed walkthrough of a static, semantic reverse engineering analysis of the kernel-mode driver MyPortIO_x64.sys from the Gigabyte Control Center utility.
@@ -206,3 +200,5 @@ DriverEntry → ProccessDriver (MajorFunction table)
              ├─ AnotherPorts/DataInProccess ──┘
              └─ (SafeGetDeviceStackEntry → SecCookieCheck → SystemCrash)
 error_driverExit
+
+(Unfortunately, this is only visible when viewing the 'Code' mode for this README.)
