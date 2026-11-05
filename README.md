@@ -13,7 +13,7 @@
 Гипотеза заключается в том что это точка входа драйвера для создания объекта устройства.
 Подтверждено тем, что это опять же классический паттерн Windows-драйверов.
 Так же хочу подметить ProccessDriver , которая пишет адрес MajorFunc сразу в несколько слотов таблицы DriverObject->MajorFunction( видно по смещениям.).
-![ProccessDriver](MyPortIo_x64.sys-write-up/photos
+![ProccessDriver](photos
 /ProccessDriver.png)
 
 2) majorFunc
