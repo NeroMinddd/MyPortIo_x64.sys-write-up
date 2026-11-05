@@ -138,14 +138,14 @@ The central and most extensive component of the binary—the primary I/O port ha
 Reconstructed iteratively through hypothesis refinement: r8 was initially hypothesized as an array of data structures, but was later re-evaluated as port range boundaries upon tracking hardware validation routines.
 The instruction cmp rcx, 0xcf8 checks against the standard PCI bus configuration address port (0xCF8), confirming direct hardware/bus access capabilities.
 Pattern matching using lea rcx, [rdx+0x4] paired with cmp rax, rcx identified a standard bounds-checking idiom. Combined with the established IoStack offset (rdx+0x18), r8 was verified as an array containing permitted hardware I/O port ranges.
-![PortsProcces](photos/PortsProccess.png)
+![PortsProcces](photos/PortProccess.png)
 
 5) IOPortDispatcher
 The core execution engine for low-level port operations.
 Contains direct in/out assembly instructions, synchronized using an atomic lock cmpxchg primitive acting on a global status flag.
 Hypothesis: Initially assumed to be data sanitization. However, comparison with subsequent data validation logic revealed its true identity: an atomic spinlock/mutex securing critical section access in multi-core kernel environments.
 Conclusion: Serves as the raw I/O execution engine accessed by higher-level wrapper routines, forming the execution path from the incoming IRP to physical hardware registers.
-![IOPortDispatcher](photos/IOPortsDispatcher.png)
+![IOPortDispatcher](photos/IOPortDispatcher.png)
 
 
 6) ThreadSafetyForDataProccess + DataInputInDriver
@@ -163,13 +163,10 @@ Exhibits the architectural Validate -> Lookup -> Dispatch pattern consistent acr
 8) SecCookieCheck
 Standard compiler-generated stack canary validation (__security_cookie).
 Invoked within SafeGetDeviceStackEntry, performing rol/ror bitwise rotations directly over values validated against global cookie values stored in .data to prevent stack buffer overflow exploitation.
-![SecCoockeCheck](photos/SecCoockeCheck.png)
 
 9) SystemCrash
 Fast-fail panic routine utilizing int 0x29.
 The failure branch from SecCookieCheck routes directly here. Loads a failure code into ecx and executes software interrupt int 0x29 to initiate an immediate kernel bug check (BSOD), preventing further exploitation upon memory corruption detection.
-![SystemCrash](photos/SystemCrash.png)
-
 
 10) SizeChecker + UserBufferSafetyChecker
 User-supplied input buffer validation logic.
