@@ -108,10 +108,6 @@ Target: MyPortIO_x64.sys is a lightweight kernel-mode driver designed to provide
 The reverse engineering process was conducted strictly at the x64 assembly level without decompiling to C code. The analysis was performed completely "blind"—without PDB symbols, debugging names, or looking up OS structures and field offsets on the internet. All structure fields, offsets, and function logic were reconstructed entirely from binary execution context and register behavior.
 Each hypothesis regarding offsets, registers, and function arguments was formulated independently first, and verified against external documentation only after a definitive conclusion was reached internally. This self-imposed challenge aimed to master manual structure reconstruction and binary analysis without external tools. Function names were assigned only when hypotheses were proven by control-flow logic rather than initial assumptions.
 
-
-I would also like to mention that, while analyzing this binary file, I discovered a critical vulnerability that allows for privilege escalation; however, I cannot disclose the details of this vulnerability at this time—not until it has been patched.
-Further details regarding the vulnerability will be provided later.
-
 1) ProccessDriver + DriverEntry
 In DriverEntry, standard initialization patterns are executed, including RtlInitUnicodeString, IoCreateDevice, and symbolic link creation.
 Hypothesis: This function serves as the primary driver entry point responsible for device object instantiation.
